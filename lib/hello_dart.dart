@@ -22,6 +22,50 @@ void main() {
   TestFuture testFuture = new TestFuture();
   testFuture.futureDelay();
   testFuture.futureWait();
+
+  // 回调炼狱
+  callBackHell(testFuture);
+
+  // 使用Future then语法去掉回调炼狱
+  solveCallbackHell(testFuture);
+
+  // 使用async和await关键字消除回调炼狱
+  asyncTask(testFuture);
+}
+
+void solveCallbackHell(TestFuture testFuture) {
+  print("before solveCallbackHell() now is ${new DateTime.now()}");
+  testFuture.login("lukas", "123456").then((id) {
+    return testFuture.getUserInfo(id);
+  }).then((userInfo) {
+    return testFuture.saveUserInfo(userInfo);
+  }).then((saveUserInfo) {
+    print("solveCallbackHell $saveUserInfo");
+  });
+}
+
+void callBackHell(TestFuture testFuture) {
+  print("before callBackHell() now is ${new DateTime.now()}");
+  testFuture.login("lukas", "123456").then((id) {
+    testFuture.getUserInfo(id).then((userInfo) {
+      testFuture.saveUserInfo(userInfo).then((saveInfo) {
+        print("callBackHell $saveInfo");
+      });
+    });
+  });
+}
+
+// async 用来表示函数是异步的，定义的函数会返回一个Future对象，可以使用then方法添加回调函数。
+asyncTask(TestFuture testFuture) async {
+  print("before asyncTask() now is ${new DateTime.now()}");
+  // await后面是一个Future，表示等待该异步任务完成，异步完成后才能走后面的逻辑,await必须出现在async函数内部。
+  String id = await testFuture.login("lukas", "123456");
+  print("asyncTask() execute login, now is ${new DateTime.now()}");
+  String userInfo = await testFuture.getUserInfo(id);
+  print("asyncTask() execute getUserInfo, now is ${new DateTime.now()}");
+  String saveInfo = await testFuture.saveUserInfo(userInfo);
+  print("asyncTask() execute saveUserInfo, now is ${new DateTime.now()}");
+  print("asyncTask() $saveInfo");
 }
 
 void printLengths() {
@@ -93,9 +137,39 @@ class TestFuture {
         return "second now is ${new DateTime.now()}";
       })
     ]).then((results) {
-      print("then " + results[0] + results[1] + ",now is ${new DateTime.now()}");
+      print(
+          "then " + results[0] + results[1] + ",now is ${new DateTime.now()}");
     }).whenComplete(() {
       print("when Complete() now is ${new DateTime.now()}");
+    });
+  }
+
+  // 模拟登陆耗时操作
+  Future<String> login(String userName, String password) {
+    return Future.delayed(new Duration(seconds: 2), () {
+      if (userName == "lukas" && password == "123456") {
+        return "True,now is ${new DateTime.now()}";
+      } else {
+        return "False,now is ${new DateTime.now()}";
+      }
+    });
+  }
+
+  // 模拟获取信息操作
+  Future<String> getUserInfo(String id) {
+    return Future.delayed(new Duration(seconds: 2), () {
+      if (id.startsWith("True")) {
+        return "lukas,china,29,now is ${new DateTime.now()}";
+      } else {
+        return "null information,now is ${new DateTime.now()}";
+      }
+    });
+  }
+
+  // 模拟保存信息的操作
+  Future<String> saveUserInfo(String userInfo) {
+    return Future.delayed(new Duration(seconds: 2), () {
+      return "Save infomation success! now is ${new DateTime.now()}";
     });
   }
 }
