@@ -31,6 +31,8 @@ void main() {
 
   // 使用async和await关键字消除回调炼狱
   asyncTask(testFuture);
+
+  testStream();
 }
 
 void solveCallbackHell(TestFuture testFuture) {
@@ -66,6 +68,29 @@ asyncTask(TestFuture testFuture) async {
   String saveInfo = await testFuture.saveUserInfo(userInfo);
   print("asyncTask() execute saveUserInfo, now is ${new DateTime.now()}");
   print("asyncTask() $saveInfo");
+}
+
+void testStream() {
+  // Stream 也是用于接收异步事件数据，和Future不同的是，它可以接收多个异步操作的结果(成功或者失败)
+  // 这个有点类似于RxJava中的Obserable flatMap，Stream常用于会多次读取数据的异步任务场景，例如内容下载，文件读写。
+  Stream.fromFutures([
+    // 延迟1s
+    Future.delayed(new Duration(seconds: 1), () {
+      return "hello 1";
+    }),
+    Future.delayed(new Duration(seconds: 2), () {
+      throw AssertionError("Assert Error");
+    }),
+    Future.delayed(new Duration(seconds: 3), () {
+      return "world 3";
+    })
+  ]).listen((data) {
+    print("$data,now is ${new DateTime.now()}");
+  }, onError: (handleError) {
+    print("$handleError,now is ${new DateTime.now()}");
+  }, onDone: () {
+    print("onDone,now is ${new DateTime.now()}");
+  });
 }
 
 void printLengths() {
