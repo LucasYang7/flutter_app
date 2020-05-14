@@ -98,6 +98,15 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.display1,
             ),
+            FlatButton(
+              child: Text("open new route"),
+              textColor: Colors.blue,
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return NewRoute();
+                }));
+              },
+            )
           ],
         ),
       ),
@@ -108,4 +117,20 @@ class _MyHomePageState extends State<MyHomePage> {
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
+}
+
+// 这是一个新的路由页面，类似于Android中的Activity
+class NewRoute extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("New route"),
+      ),
+      body: Center(
+        child: Text("This is new route"),
+      ),
+    );
+  }
+
 }
