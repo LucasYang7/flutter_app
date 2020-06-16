@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 void main() => runApp(MyApp());
@@ -106,7 +108,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   return NewRoute();
                 }));
               },
-            )
+            ),
+            MyButton()
           ],
         ),
       ),
@@ -133,4 +136,29 @@ class NewRoute extends StatelessWidget {
     );
   }
 
+}
+
+// 自定义一个按钮
+class MyButton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        debugPrint('MyButton was tapped!');  // debugPrint相当于log
+      },
+      child: Container(
+        height: 36.0,
+        padding: const EdgeInsets.all(8.0),
+        margin: const EdgeInsets.symmetric(horizontal: 8.0),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(5.0),
+          color: Colors.lightGreen[500],
+        ),
+        child: Center(
+          child: Text('GestureDetector'),
+        ),
+      ),
+
+    );
+  }
 }
